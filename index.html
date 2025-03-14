@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32 펌웨어 업데이트 시스템</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .endpoint { background-color: #e7f3fe; padding: 10px; border-left: 5px solid #2196F3; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>STM32 펌웨어 업데이트 시스템</h1>
+    
+    <h2>최신 펌웨어 정보</h2>
+    <div id="latest-firmware">로딩 중...</div>
+    
+    <h2>API 엔드포인트</h2>
+    <div class="endpoint">
+        <h3>펌웨어 메타데이터 (JSON)</h3>
+        <p>URL: <a href="./metadata/firmware_info.json" target="_blank">./metadata/firmware_info.json</a></p>
+        <p>STM32 디바이스는 이 URL로 HTTP GET 요청을 보내 최신 펌웨어 정보를 확인할 수 있습니다.</p>
+    </div>
+    
+    <h2>펌웨어 버전 기록</h2>
+    <table id="version-table">
+        <tr>
+            <th>버전</th>
+            <th>날짜</th>
+            <th>크기</th>
+            <th>CRC32</th>
+            <th>다운로드</th>
+        </tr>
+        <tr>
+            <td colspan="5">로딩 중...</td>
+        </tr>
+    </table>
+    
+    <script>
+        // 페이지 로드 시 펌웨어 정보 가져오기
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('./metadata/firmware_info.json');
+                const data = await response.json();
+                
+                // 최신 펌웨어 정보 표시
+                const latest = data.latest;
+                document.getElementById('latest-firmware').innerHTML = `
+                    <p><strong>버전:</strong> ${latest.version}</p>
+                    <p><strong>릴리스 날짜:</strong> ${latest.releaseDate}</p>
+                    <p><strong>파일 크기:</strong> ${latest.size.toLocaleString()} 바이트</p>
+                    <p><strong>CRC32:</strong> ${latest.crc32}</p>
+                    <p><strong>다운로드 URL:</strong> <a href="${latest.downloadUrl}" target="_blank">${latest.filename}</a></p>
+                    <p><strong>릴리스 노트:</strong> ${latest.releaseNotes}</p>
+                `;
+                
+                // 버전 테이블 업데이트
+                const tableHtml = [
+                    `<tr>
+                        <td>${latest.version}</td>
+                        <td>${latest.releaseDate}</td>
+                        <td>${latest.size.toLocaleString()} 바이트</td>
+                        <td>${latest.crc32}</td>
+                        <td><a href="${latest.downloadUrl}" target="_blank">다운로드</a></td>
+                    </tr>`
+                ];
+                
+                // 이전 버전들 추가
+                data.versions.forEach(version => {
+                    if(version.version !== latest.version) {
+                        tableHtml.push(`
+                            <tr>
+                                <td>${version.version}</td>
+                                <td>${version.releaseDate}</td>
+                                <td>${version.size.toLocaleString()} 바이트</td>
+                                <td>${version.crc32}</td>
+                                <td><a href="${version.downloadUrl}" target="_blank">다운로드</a></td>
+                            </tr>
+                        `);
+                    }
+                });
+                
+                document.getElementById('version-table').innerHTML = `
+                    <tr>
+                        <th>버전</th>
+                        <th>날짜</th>
+                        <th>크기</th>
+                        <th>CRC32</th>
+                        <th>다운로드</th>
+                    </tr>
+                    ${tableHtml.join('')}
+                `;
+            } catch (error) {
+                console.error('펌웨어 정보를 가져오는 중 오류 발생:', error);
+                document.getElementById('latest-firmware').innerHTML = '<p>펌웨어 정보를 불러올 수 없습니다.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
