@@ -1,0 +1,26 @@
+{
+    "latest": {
+        "version": "1.0.0",
+        "filename": "firmware_v1.0.0.bin",
+        "releaseDate": "2025-01-10",
+        "size": 256000,
+        "crc32": "24A7F981",
+        "downloadUrl": "https://mj-kang-iotiz.github.io/lte_fota_test/firmware/firmware_v1.0.0.bin",
+        "releaseNotes": "성능 개선 및 버그 수정",
+        "minHardwareVersion": "1.0",
+        "requiredUpdate": false
+    },
+    "versions": [
+        {
+            "version": "1.0.0",
+            "filename": "firmware_v1.0.0.bin",
+            "releaseDate": "2025-01-10",
+            "size": 256000,
+            "crc32": "24A7F981",
+            "downloadUrl": "https://mj-kang-iotiz.github.io/lte_fota_test/firmware/firmware_v1.0.0.bin",
+            "releaseNotes": "최초 릴리스",
+            "minHardwareVersion": "1.0",
+            "requiredUpdate": false
+        }
+    ]
+}
